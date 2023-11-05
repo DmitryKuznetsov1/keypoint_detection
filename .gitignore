@@ -1,3 +1,5 @@
 .DS_Store
 tasks
 .idea
+venv
+.ipynb_checkpoints
