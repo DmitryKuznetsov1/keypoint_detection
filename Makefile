@@ -9,7 +9,7 @@ activate-venv:
 	. venv/bin/activate
 
 load-model:
-	python build/load_model.py
+	python build/model_preloading.py
 
 install-deps:
 	pip install -r requirements.txt
