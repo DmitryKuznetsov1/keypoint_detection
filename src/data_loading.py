@@ -11,7 +11,6 @@ from json.decoder import JSONDecodeError
 import numpy as np
 
 
-# TODO: Добавить обработку нескольких точек из json
 class TasksDataset(Dataset):
     def __init__(self, data_folder: str, load_images=True):
         self.data_folder = data_folder
@@ -19,6 +18,7 @@ class TasksDataset(Dataset):
 
         self.images = []
         self.coordinates = []
+        self.untracked_points = 0
         all_files = (f for f in os.listdir(data_folder) if f.endswith('.jpg'))
 
         print(f"Loading {data_folder} ...")
@@ -39,7 +39,8 @@ class TasksDataset(Dataset):
                     continue
                 if not coords:
                     continue
-
+                if len(coords) > 1:
+                    self.untracked_points += len(coords) - 1
                 self.coordinates.append((coords[0]['x'], coords[0]['y']))
 
             image_path = os.path.join(self.data_folder, image_name)
@@ -67,8 +68,12 @@ class TasksDataset(Dataset):
         image_array = np.array(image)
         return image_array
 
+    def get_number_of_untracked_points(self):
+        return self.untracked_points
 
-def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> Tuple[DataLoader[Any], int]:
+
+def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> Tuple[DataLoader[Any], int, int]:
     dataset = TasksDataset(folder_path, load_images=load_images)
+    untracked_points = dataset.get_number_of_untracked_points()
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-    return dataloader, len(dataset)
+    return dataloader, len(dataset), untracked_points

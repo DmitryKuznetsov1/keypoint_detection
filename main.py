@@ -62,25 +62,26 @@ def main():
     true_positives_total = 0
     distances_total = 0
     n_samples_total = 0
+    untracked_points_total = 0
 
     start = time()
     for dataset_folder_name, dataset_query in dataset.items():
         ds_start = time()
         ds_path = os.path.join(args.datasets_path, dataset_folder_name)
-        data_loader, n_samples = create_data_loader(ds_path, load_images=args.load_images, batch_size=args.batch_size)
-
+        data_loader, n_samples, untracked_points = create_data_loader(ds_path, load_images=args.load_images, batch_size=args.batch_size)
         ds_true_positives, ds_distances = evaluate_model(model, data_loader, dataset_query)
 
-        ds_accuracy = ds_true_positives / n_samples
-        ds_avg_distance = ds_distances / n_samples
+        ds_accuracy = ds_true_positives / (n_samples + untracked_points)
+        ds_avg_distance = ds_distances / (n_samples + untracked_points)
         print(f"\tacc: {ds_accuracy:.2f}, dst: {ds_avg_distance:.3f}, time: {(time() - ds_start):.2f}\n")
 
         true_positives_total += ds_true_positives
         distances_total += ds_distances
         n_samples_total += n_samples
+        untracked_points_total += untracked_points
 
-    accuracy = true_positives_total / n_samples_total
-    avg_distance = distances_total / n_samples_total
+    accuracy = true_positives_total / (n_samples_total + untracked_points_total)
+    avg_distance = distances_total / (n_samples_total + untracked_points_total)
     print(f"All Datasets: Accuracy: {accuracy}, Average Distance: {avg_distance}, Time: {round(time() - start, 2)}")
 
 
