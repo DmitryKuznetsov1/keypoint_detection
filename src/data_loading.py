@@ -1,20 +1,14 @@
 import os
+from typing import Any
+
+from PIL.JpegImagePlugin import JpegImageFile
 from PIL import Image
 import json
+import torch
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 from json.decoder import JSONDecodeError
-
-
-dataset_folders = [
-    'squirrels_head',
-    'squirrels_tail',
-    'the_center_of_the_gemstone',
-    'the_center_of_the_koalas_nose',
-    'the_center_of_the_owls_head',
-    'the_center_of_the_seahorses_head',
-    'the_center_of_the_teddy_bear_nose'
-]
+import numpy as np
 
 
 # TODO: Добавить обработку нескольких точек из json
@@ -28,26 +22,25 @@ class TasksDataset(Dataset):
         all_files = (f for f in os.listdir(data_folder) if f.endswith('.jpg'))
 
         print(f"Loading {data_folder} ...")
-
         empty_json_files = 0
-        for image_name in tqdm(all_files):
+        for image_name in tqdm(all_files, dynamic_ncols=True):
             json_name = os.path.splitext(image_name)[0] + '.json'
             json_path = os.path.join(self.data_folder, json_name)
-            if os.path.exists(json_path):
-                with open(json_path, "r") as json_file:
-                    try:
-                        coords = json.loads(json_file.read())
-                    except JSONDecodeError:
-                        empty_json_files += 1
-                        continue
 
-                    if coords:
-                        self.coordinates.append((coords[0]['x'], coords[0]['y']))
-                    else:
-                        continue
-            else:
+            if not os.path.exists(json_path):
                 print(f"There is no json file for {image_name}")
                 continue
+
+            with open(json_path, "r") as json_file:
+                try:
+                    coords = json.loads(json_file.read())
+                except JSONDecodeError:
+                    empty_json_files += 1
+                    continue
+                if not coords:
+                    continue
+
+                self.coordinates.append((coords[0]['x'], coords[0]['y']))
 
             image_path = os.path.join(self.data_folder, image_name)
             if self.load_images:
@@ -67,10 +60,15 @@ class TasksDataset(Dataset):
         else:
             image_path = self.images[idx]
             image = Image.open(image_path)
-        return image, self.coordinates[idx]
+        return self.transform(image), torch.Tensor(self.coordinates[idx])
+
+    @staticmethod
+    def transform(image: JpegImageFile):
+        image_array = np.array(image)
+        return image_array
 
 
-def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> DataLoader:
+def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> tuple[DataLoader[Any], int]:
     dataset = TasksDataset(folder_path, load_images=load_images)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-    return dataloader
+    return dataloader, len(dataset)
