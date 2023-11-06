@@ -26,9 +26,9 @@ def parse_args():
     parser.add_argument("--datasets-path", type=str, default="tasks",
                         help="Path to the folder containing the specified datasets")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size for data loading")
-    parser.add_argument("--load-to-memory", dest="load_images", default=True, action="store_true",
-                        help="Load datasets into RAM")
+    parser.add_argument("--load-to-memory", dest="load_images", type=int, default=1, help="Load datasets into RAM")
     args = parser.parse_args()
+    args.load_images = False if args.load_images == 0 else True
 
     print(f"Batch size: {args.batch_size}")
     print(f"Load to memory: {args.load_images}\n")
