@@ -1,6 +1,8 @@
 import argparse
 import os
 from time import time
+from typing import Tuple
+
 from tqdm import tqdm
 
 import torch
@@ -35,7 +37,7 @@ def parse_args():
     return args
 
 
-def evaluate_model(model, data_loader: DataLoader, query: str) -> tuple[int, float]:
+def evaluate_model(model, data_loader: DataLoader, query: str) -> Tuple[int, float]:
     true_positives = 0
     distances = 0
 

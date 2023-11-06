@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from typing import Any, Tuple
 
 from PIL.JpegImagePlugin import JpegImageFile
 from PIL import Image
@@ -68,7 +68,7 @@ class TasksDataset(Dataset):
         return image_array
 
 
-def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> tuple[DataLoader[Any], int]:
+def create_data_loader(folder_path: str, load_images: bool, batch_size: int) -> Tuple[DataLoader[Any], int]:
     dataset = TasksDataset(folder_path, load_images=load_images)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     return dataloader, len(dataset)

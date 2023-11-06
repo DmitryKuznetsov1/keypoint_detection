@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, List
 
 import torch
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
@@ -29,7 +29,7 @@ def load_model(weights: str = "google/owlv2-base-patch16-ensemble", device: torc
     model.eval()
     model.to(device)
 
-    def predict(images: torch.Tensor, texts: list[list]):
+    def predict(images: torch.Tensor, texts: List[list]):
         with torch.no_grad():
             images = images.to(device)
             inputs = processor(text=texts, images=images, return_tensors="pt")
