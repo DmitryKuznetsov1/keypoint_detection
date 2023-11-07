@@ -72,7 +72,7 @@ def main():
         ds_true_positives, ds_distances = evaluate_model(model, data_loader, dataset_query)
 
         ds_accuracy = ds_true_positives / (n_samples + untracked_points)
-        ds_avg_distance = ds_distances / (n_samples + untracked_points)
+        ds_avg_distance = ds_distances / n_samples
         print(f"\tacc: {ds_accuracy:.2f}, dst: {ds_avg_distance:.3f}, time: {(time() - ds_start):.2f}\n")
 
         true_positives_total += ds_true_positives
@@ -81,7 +81,7 @@ def main():
         untracked_points_total += untracked_points
 
     accuracy = true_positives_total / (n_samples_total + untracked_points_total)
-    avg_distance = distances_total / (n_samples_total + untracked_points_total)
+    avg_distance = distances_total / n_samples_total
     print(f"All Datasets: Accuracy: {accuracy}, Average Distance: {avg_distance}, Time: {round(time() - start, 2)}")
 
 
