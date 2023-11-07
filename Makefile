@@ -2,21 +2,10 @@ DATASETS_PATH ?= tasks
 BATCH_SIZE ?= 2
 LOAD_IMAGES ?= 0
 
-create-venv:
+setup:
 	python3 -m venv venv
+	./venv/bin/pip install -r requirements.txt
+	./venv/bin/python3 build/model_preloading.py
 
-activate-venv:
-	. venv/bin/activate
-
-load-model:
-	python build/model_preloading.py
-
-install-deps:
-	pip install -r requirements.txt
-
-evaluate_model:
-	python main.py --datasets-path $(DATASETS_PATH) --batch-size $(BATCH_SIZE) --load-to-memory $(LOAD_IMAGES)
-
-setup: create-venv activate-venv install-deps load-model
-
-eval: activate-venv evaluate_model
+eval:
+	./venv/bin/python3 main.py --datasets-path $(DATASETS_PATH) --batch-size $(BATCH_SIZE) --load-to-memory $(LOAD_IMAGES)
