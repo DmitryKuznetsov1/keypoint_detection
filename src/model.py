@@ -4,7 +4,7 @@ import torch
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
 
 
-def select_boxes_with_highest_scores(results: Iterable):
+def select_boxes_with_highest_scores(results: Iterable) -> torch.Tensor:
     most_relevant_boxes = []
     for r in results:
         if r['scores'].numel() > 0:
@@ -14,7 +14,7 @@ def select_boxes_with_highest_scores(results: Iterable):
     return torch.stack(most_relevant_boxes)
 
 
-def get_relative_center_coordinates(boxes: torch.Tensor, image_height: int, image_width: int):
+def get_relative_center_coordinates(boxes: torch.Tensor, image_height: int, image_width: int) -> torch.Tensor:
     y_c = (boxes[:, 0] + boxes[:, 2]) / 2 / image_height
     x_c = (boxes[:, 1] + boxes[:, 3]) / 2 / image_width
     p_c = torch.stack((y_c, x_c)).T
