@@ -82,7 +82,8 @@ def main():
 
     accuracy = true_positives_total / (n_samples_total + untracked_points_total)
     avg_distance = distances_total / n_samples_total
-    print(f"All Datasets: Accuracy: {accuracy}, Average Distance: {avg_distance}, Time: {round(time() - start, 2)}")
+    print(f"All Datasets: Accuracy: {accuracy:.2f}, Average Distance: {avg_distance:.3f},"
+          f" Time: {(time() - start, 2):.2f}")
 
 
 if __name__ == "__main__":
