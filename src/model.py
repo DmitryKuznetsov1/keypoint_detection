@@ -41,7 +41,7 @@ def load_model(weights: str = "google/owlv2-base-patch16-ensemble", device: torc
     model = model.to(device)
     model.eval()
 
-    def predict(images: torch.Tensor, texts: List[list], device=torch.device(0)):
+    def predict(images: torch.Tensor, texts: List[list], device=device):
         with torch.no_grad():
             images = images.to(device)
             inputs = processor(text=texts, images=images, return_tensors="pt").to(device)
